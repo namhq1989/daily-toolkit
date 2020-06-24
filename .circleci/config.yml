@@ -1,0 +1,49 @@
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2.1
+
+jobs:
+  main:
+    docker:
+      # specify the version
+      - image: circleci/golang:1.13
+
+    working_directory: /go/src/github.com/namhq1989/daily-toolkit
+
+    steps:
+      - checkout
+
+      # remote docker
+      - setup_remote_docker:
+          docker_layer_caching: false
+
+      # login ECR
+      - run:
+          name: Login to Docker hub
+          command: |
+            echo $DOCKER_PWD | docker login --username $DOCKER_USERNAME
+
+      # build the application image
+      - run:
+          name: Build && push docker image
+          command: |
+            docker build -t $DOCKER_USERNAME/$DOCKER_IMAGE:latest -t $DOCKER_USERNAME/$DOCKER_IMAGE:$CIRCLE_SHA1 . 
+            docker push $DOCKER_USERNAME/$DOCKER_IMAGE:latest
+            docker push $DOCKER_USERNAME/$DOCKER_IMAGE:$CIRCLE_SHA1
+
+      # deploy
+      - run:
+          name: Deploy
+          command: |
+            echo "Deployed"
+
+# Workflows
+workflows:
+  version: 2
+  build:
+    jobs:
+      - main:
+          filters:
+            branches:
+              only:
+                - develop
+          context: release
