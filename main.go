@@ -13,6 +13,7 @@ import (
 func main() {
 	e := echo.New()
 	e.Pre(middleware.HTTPSRedirect())
+	e.AutoTLSManager.HostPolicy = autocert.HostWhitelist("https://daily-toolkit.petprojects.rocks")
 	e.AutoTLSManager.Cache = autocert.DirCache("/var/www/.cache")
 
 	// Init route
@@ -31,5 +32,5 @@ func main() {
 		`)
 	})
 
-	e.Logger.Fatal(e.StartAutoTLS(":3000"))
+	e.Logger.Fatal(e.StartAutoTLS(":443"))
 }
