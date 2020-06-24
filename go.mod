@@ -9,4 +9,5 @@ require (
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/thoas/go-funk v0.7.0
 	go.mongodb.org/mongo-driver v1.3.4
+	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
 )
