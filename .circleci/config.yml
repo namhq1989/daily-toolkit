@@ -16,11 +16,15 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
 
+      # add ssh key, for login to server
+      - add_ssh_keys:
+          fingerprints:
+            - "61:3c:09:a0:44:93:fc:eb:8d:ce:81:f2:37:31:54:1e"
+
       # login ECR
       - run:
           name: Login to Docker hub
           command: |
-            # echo $DOCKER_PWD | docker login --username $DOCKER_USERNAME
             echo $DOCKER_PWD | docker login -u $DOCKER_USERNAME --password-stdin
 
       # build the application image
@@ -33,9 +37,9 @@ jobs:
 
       # deploy
       - run:
-          name: Deploy
+          name: Deploy to Google VM instance
           command: |
-            echo "Deployed"
+            ssh -o StrictHostKeyChecking=no $SSH_HOSTNAME "/bin/bash /home/dev/deploy_app.sh $DOCKER_USERNAME/$DOCKER_IMAGE:$CIRCLE_SHA1"
 
 # Workflows
 workflows:
@@ -46,5 +50,5 @@ workflows:
           filters:
             branches:
               only:
-                - develop
+                - release
           context: release
