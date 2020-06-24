@@ -26,5 +26,5 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Start server
-	e.Logger.Fatal(e.StartAutoTLS(":3000"))
+	e.Logger.Fatal(e.StartAutoTLS(":443"))
 }
