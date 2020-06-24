@@ -1,20 +1,35 @@
 package main
 
 import (
+	"os"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/crypto/acme/autocert"
 
+	"github.com/namhq1989/daily-toolkit/initialize"
 	"github.com/namhq1989/daily-toolkit/route"
 )
+
+var isRelease = false
+
+func init() {
+	initialize.Init()
+
+	// Check env
+	env := os.Getenv("ENV")
+	isRelease = env == "release"
+}
 
 func main() {
 	e := echo.New()
 
-	// Add TLS
-	e.Pre(middleware.HTTPSRedirect())
-	e.AutoTLSManager.HostPolicy = autocert.HostWhitelist("daily-toolkit.petprojects.rocks")
-	e.AutoTLSManager.Cache = autocert.DirCache("/var/www/.cache")
+	if isRelease {
+		// Add TLS
+		e.Pre(middleware.HTTPSRedirect())
+		e.AutoTLSManager.HostPolicy = autocert.HostWhitelist("daily-toolkit.petprojects.rocks")
+		e.AutoTLSManager.Cache = autocert.DirCache("/var/www/.cache")
+	}
 
 	// Init route
 	route.Init(e)
@@ -26,5 +41,10 @@ func main() {
 	e.Use(middleware.Recover())
 
 	// Start server
-	e.Logger.Fatal(e.StartAutoTLS(":443"))
+	if isRelease {
+		// Running on port 443, due to TLS required
+		e.Logger.Fatal(e.StartAutoTLS(":443"))
+	} else {
+		e.Logger.Fatal(e.Start(":3000"))
+	}
 }
