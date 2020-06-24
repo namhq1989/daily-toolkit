@@ -1,13 +1,13 @@
 kind: pipeline
 name: default
 steps:
-  // Drone does not pull git tags by default
+  # Drone does not pull git tags by default
   - name: fetch
     image: docker:git
     commands:
       - git fetch --tags
 
-  // Run goreleaser only on tags
+  # Run goreleaser only on tags
   - name: release
     image: golang
     environment:
@@ -21,7 +21,7 @@ steps:
     when:
       event: tag
 
-// Save dependencies between steps
+# Save dependencies between steps
 volumes:
   - name: deps
     temp: {}
