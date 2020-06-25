@@ -6,9 +6,9 @@ import (
 	"github.com/namhq1989/daily-toolkit/controller"
 )
 
-func expense(e *echo.Echo) {
-	routes := e.Group("/expenses")
+func user(e *echo.Echo) {
+	routes := e.Group("/users")
 
 	// List expenses
-	routes.GET("", controller.ExpenseListAll, requireLogin)
+	routes.GET("/token", controller.UserGetToken)
 }

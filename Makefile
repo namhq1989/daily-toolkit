@@ -1,4 +1,4 @@
 export ENV=develop
 
-run-app:
+run:
 	go run *.go

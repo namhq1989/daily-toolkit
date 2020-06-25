@@ -11,4 +11,5 @@ func Init(e *echo.Echo) {
 
 	// Boostrap routes
 	expense(e)
+	user(e)
 }
