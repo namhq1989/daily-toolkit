@@ -5,9 +5,9 @@ type (
 	ExpenseCategory struct {
 		tableName struct{} `pg:"expense_categories"`
 
-		ID    UUID   `pg:"_id,pk,type:uuid"`
-		Name  string `pg:"name"`
-		Color string `pg:"color"`
-		Icon  int    `pg:"icon"`
+		ID    UUID   `sql:"_id,pk" pg:"_id,pk" json:"_id"`
+		Name  string `pg:"name" json:"name"`
+		Color string `pg:"color" json:"color"`
+		Icon  int    `pg:"icon" json:"icon"`
 	}
 )

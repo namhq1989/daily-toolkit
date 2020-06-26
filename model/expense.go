@@ -9,11 +9,13 @@ type (
 	Expense struct {
 		tableName struct{} `pg:"expenses"`
 
-		ID        UUID            `pg:"_id,pk,type:uuid"`
-		User      User            `pg:"user_id"`
-		Category  ExpenseCategory `pg:"category_id"`
-		Amount    int             `pg:"amount"`
-		Note      string          `pg:"note"`
-		CreatedAt time.Time       `pg:"created_at"`
+		ID         UUID             `sql:"_id,pk" pg:"_id,pk" json:"_id"`
+		UserID     UUID             `pg:"user_id" json:"-"`
+		User       *User            `pg:"fk:user_id" json:"user"`
+		CategoryID UUID             `pg:"category_id" json:"-"`
+		Category   *ExpenseCategory `sql:"fk:category_id" json:"category"`
+		Amount     int              `pg:"amount" json:"amount"`
+		Note       string           `pg:"note" json:"note"`
+		CreatedAt  time.Time        `pg:"created_at" json:"createdAt"`
 	}
 )

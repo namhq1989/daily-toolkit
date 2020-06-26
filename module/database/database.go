@@ -4,11 +4,24 @@ import (
 	"context"
 
 	"github.com/go-pg/pg/v10"
+	"github.com/kr/pretty"
 )
 
 var (
 	db *pg.DB
 )
+
+type dbLogger struct{}
+
+func (d dbLogger) BeforeQuery(c context.Context, q *pg.QueryEvent) (context.Context, error) {
+	data, _ := q.FormattedQuery()
+	pretty.Println(string(data))
+	return c, nil
+}
+
+func (d dbLogger) AfterQuery(c context.Context, q *pg.QueryEvent) error {
+	return nil
+}
 
 // Connect to database
 func Connect() {
@@ -24,6 +37,9 @@ func Connect() {
 	if err := db.Ping(context.Background()); err != nil {
 		panic(err)
 	}
+
+	db.AddQueryHook(dbLogger{})
+
 }
 
 // GetConnection return a connection in pool

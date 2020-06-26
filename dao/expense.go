@@ -15,7 +15,17 @@ func ExpenseFindByUserID(ctx context.Context, userID model.UUID, query model.Com
 	)
 	defer db.Close()
 
-	err := db.Model(&result).Where("user_id = ?", userID).Join("JOIN users as u").JoinOn("u._id = ?", userID).Limit(query.Limit).Select()
+	err := db.Model(&result).
+		Where("user_id = ?", userID).
+		Relation("User").
+		Relation("Category").
+		// ColumnExpr("expense.*").
+		// ColumnExpr("u.name AS user__name, u._id AS user___id, u.phone AS user__phone").
+		// Join("JOIN users AS u ON u._id = expense.user_id").
+		// ColumnExpr("c.name AS category__name, c._id AS category___id, c.color AS category__color, c.icon AS category__icon").
+		// Join("JOIN expense_categories AS c ON c._id = expense.category_id").
+		Limit(query.Limit).
+		Select()
 	if err != nil {
 		pretty.Println("Error when find expense by user id", err)
 	}

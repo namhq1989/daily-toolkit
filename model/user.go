@@ -11,10 +11,10 @@ type (
 	User struct {
 		tableName struct{} `pg:"users"`
 
-		ID        UUID      `pg:"_id,pk,type:uuid"`
-		Name      string    `pg:"name"`
-		Phone     string    `pg:"phone"`
-		CreatedAt time.Time `pg:"created_at"`
+		ID        UUID      `sql:"_id,pk,type:uuid" pg:"_id,pk" json:"_id"`
+		Name      string    `pg:"name" json:"name"`
+		Phone     string    `pg:"phone" json:"phone"`
+		CreatedAt time.Time `pg:"created_at" json:"-"`
 	}
 )
 
