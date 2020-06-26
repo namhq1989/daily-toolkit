@@ -8,7 +8,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	uuid "github.com/satori/go.uuid"
 
 	"github.com/namhq1989/daily-toolkit/config"
 	"github.com/namhq1989/daily-toolkit/util"
@@ -32,7 +32,8 @@ func auth(next echo.HandlerFunc) echo.HandlerFunc {
 		authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
 
 		// Parse token
-		tokenData, _ := parseToken(authHeader, "auth_secret") // FIXME: change secret key
+		tokenData, _ := parseToken(authHeader, "app_secret") // FIXME: change secret key
+
 		// Skip if cannot parse token
 		if tokenData == nil {
 			c.Set(config.EchoContextKeyCurrentUserID, "")
@@ -71,14 +72,14 @@ func parseToken(token string, authSecretKey string) (*jwt.Token, error) {
 // requireLogin to do next action
 func requireLogin(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		userID := c.Get(config.EchoContextKeyCurrentUserID).(string)
+		userIDString := c.Get(config.EchoContextKeyCurrentUserID).(string)
 
-		if userID == "" {
+		if userIDString == "" {
 			return util.Response401(c, echo.Map{}, "")
 		}
 
-		_, err := primitive.ObjectIDFromHex(userID)
-		if err != nil {
+		userID := uuid.FromStringOrNil(userIDString)
+		if userID.String() == "" {
 			return util.Response401(c, echo.Map{}, "")
 		}
 

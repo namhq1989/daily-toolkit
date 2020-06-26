@@ -15,7 +15,7 @@ func ExpenseFindByUserID(ctx context.Context, userID model.UUID, query model.Com
 	)
 	defer db.Close()
 
-	err := db.Model(&result).Where("user_id = ?", userID).Limit(query.Limit).Select()
+	err := db.Model(&result).Where("user_id = ?", userID).Join("JOIN users as u").JoinOn("u._id = ?", userID).Limit(query.Limit).Select()
 	if err != nil {
 		pretty.Println("Error when find expense by user id", err)
 	}
