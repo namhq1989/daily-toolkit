@@ -9,14 +9,17 @@ import (
 type (
 	// User ...
 	User struct {
-		tableName struct{} `pg:"users"`
-
-		ID        UUID      `sql:"_id,pk,type:uuid" pg:"_id,pk" json:"_id"`
-		Name      string    `pg:"name" json:"name"`
-		Phone     string    `pg:"phone" json:"phone"`
-		CreatedAt time.Time `pg:"created_at" json:"-"`
+		ID        UUID      `gorm:"primary_key,column:_id" json:"_id"`
+		Name      string    `gorm:"column:name" json:"name"`
+		Phone     string    `gorm:"column:phone" json:"phone"`
+		CreatedAt time.Time `gorm:"column:created_at" json:"-"`
 	}
 )
+
+// TableName ...
+func (User) TableName() string {
+	return "users"
+}
 
 // GenerateToken generate token for authentication
 func (user *User) GenerateToken() string {

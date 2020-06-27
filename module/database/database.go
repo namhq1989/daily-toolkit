@@ -3,46 +3,32 @@ package database
 import (
 	"context"
 
-	"github.com/go-pg/pg/v10"
-	"github.com/kr/pretty"
+	"github.com/jinzhu/gorm"
+
+	// For postgres dialect
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 var (
-	db *pg.DB
+	db  *gorm.DB
+	err error
 )
-
-type dbLogger struct{}
-
-func (d dbLogger) BeforeQuery(c context.Context, q *pg.QueryEvent) (context.Context, error) {
-	data, _ := q.FormattedQuery()
-	pretty.Println(string(data))
-	return c, nil
-}
-
-func (d dbLogger) AfterQuery(c context.Context, q *pg.QueryEvent) error {
-	return nil
-}
 
 // Connect to database
 func Connect() {
 	// FIXME: change config
-	db = pg.Connect(&pg.Options{
-		User:     "namhq",
-		Password: "123456",
-		Database: "daily_toolkit",
-	})
+	db, err = gorm.Open("postgres", "host=localhost port=5432 user=namhq dbname=daily_toolkit password=123456 sslmode=disable")
 	// defer db.Close()
 
 	// Check db is up and running
-	if err := db.Ping(context.Background()); err != nil {
+	if err != nil {
 		panic(err)
 	}
 
-	db.AddQueryHook(dbLogger{})
-
+	db.LogMode(true)
 }
 
 // GetConnection return a connection in pool
-func GetConnection(ctx context.Context) *pg.Conn {
-	return db.WithContext(ctx).Conn()
+func GetConnection(ctx context.Context) *gorm.DB {
+	return db.New()
 }

@@ -16,7 +16,7 @@ func UserFindByID(ctx context.Context, userID model.UUID) model.User {
 	)
 	defer db.Close()
 
-	err := db.Select(result)
+	err := db.Take(&result)
 	if err != nil {
 		pretty.Println("Error when find expense by user id", err)
 	}
